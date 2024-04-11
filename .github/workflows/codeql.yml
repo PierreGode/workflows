@@ -11,7 +11,7 @@ on:
 jobs:
   analyze:
     name: Analyze
-    runs-on: ubuntu-latest  # Simplified for demonstration; adjust as needed
+    runs-on: ubuntu-latest
     timeout-minutes: 360
     permissions:
       security-events: write
@@ -22,8 +22,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - language: 'javascript-typescript'
-            build-mode: 'default'
           - language: 'python'
             build-mode: 'default'
 
@@ -35,7 +33,5 @@ jobs:
       uses: github/codeql-action/init@v3
       with:
         languages: ${{ matrix.language }}
-        # Optionally, specify build-mode and/or custom queries
-
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
