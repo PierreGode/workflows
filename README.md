@@ -1,6 +1,7 @@
 # Workflows Repository by Pierre Gode
 Welcome to the Workflows repository, a dedicated space for experimenting with and demonstrating the capabilities of GitHub Actions, workflows, CI/CD pipelines, security practices, branch protection rules, and code scanning.<p> Managed by Pierre Gode, this repository aims to explore the vast possibilities of GitHub's automation and security features to streamline development workflows and enhance code quality and security.
 
+
 ## Table of Contents
 About The Project<p>
 Getting Started<p>
