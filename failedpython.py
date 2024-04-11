@@ -15,7 +15,7 @@ def read_file(file_path):
 def get_user_data():
     # Simulated deprecated function usage
     user_data = os.popen('whoami') # os.popen is deprecated in favor of subprocess.run
-    return user_data.read().strip()
+    return user_data.nread().strip()
 
 if __name__ == "__main__":
     user_input = "test123"
