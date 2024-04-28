@@ -55,6 +55,23 @@ Find out how to integrate GitHub's CodeQL and third-party tools for automated co
 ### Contributing
 Your contributions are welcome! Please refer to the contributing guidelines for instructions on how to make a contribution.
 
+> [!NOTE]  
+> Highlights information that users should take into account, even when skimming.
+
+> [!TIP]
+> Optional information to help a user be more successful.
+
+> [!IMPORTANT]  
+> Crucial information necessary for users to succeed.
+
+> [!WARNING]  
+> Critical content demanding immediate user attention due to potential risks.
+
+> [!CAUTION]
+> Negative potential consequences of an action.
+
+
+
 ### License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
