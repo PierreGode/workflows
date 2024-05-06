@@ -63,6 +63,7 @@ Your contributions are welcome! Please refer to the contributing guidelines for 
 
 > [!IMPORTANT]  
 > Crucial information necessary for users to succeed.
+> take actions
 
 > [!WARNING]  
 > Critical content demanding immediate user attention due to potential risks.
