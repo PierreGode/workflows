@@ -1,6 +1,6 @@
 # Example Python script with intentional small errors for educational purposes
 
-import hashlib
+impo rt hashlib
 import os
 
 def insecure_md5_hash(input_string):
