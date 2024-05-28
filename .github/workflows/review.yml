@@ -18,5 +18,5 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_API_MODEL: "gpt-4o"
+          OPENAI_API_MODEL: "gpt-4-turbo-2024-04-09"
           exclude: "**/*.json, **/*.md" # Optional: exclude patterns separated by commas
