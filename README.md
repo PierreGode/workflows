@@ -1,7 +1,34 @@
 # Workflows Repository by Pierre Gode
 Welcome to the Workflows repository, a dedicated space for experimenting with and demonstrating the capabilities of GitHub Actions, workflows, CI/CD pipelines, security practices, branch protection rules, and code scanning.<p> Managed by Pierre Gode, this repository aims to explore the vast possibilities of GitHub's automation and security features to streamline development workflows and enhance code quality and security.
 
-![GitHub Workflow Status](https://github.com/PierreGode/workflows/actions/workflows/blank.yml/badge.svg)
+![GitHub Workflow Status](https://github.com/PierreGode/workflows/actions/workflows/review.yml/badge.svg)
+[![CodeQL](https://github.com/PierreGode/workflows/actions/workflows/codeql.yml/badge.svg)](https://github.com/PierreGode/workflows/actions/workflows/codeql.yml) 
+![Build Status](https://img.shields.io/github/actions/workflow/status/PierreGode/workflows/review.yml) 
+![Last Commit](https://img.shields.io/github/last-commit/PierreGode/workflows) 
+![License](https://img.shields.io/github/license/PierreGode/workflows)
+![Stars](https://img.shields.io/github/stars/PierreGode/workflows)
+![Watchers](https://img.shields.io/github/watchers/PierreGode/workflows)
+![Open Issues](https://img.shields.io/github/issues/PierreGode/workflows)
+![Closed Issues](https://img.shields.io/github/issues-closed/PierreGode/workflows)
+![Open PRs](https://img.shields.io/github/issues-pr/PierreGode/workflows)
+![Dependabot Status](https://img.shields.io/badge/Dependabot-active-brightgreen)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/PierreGode/workflows)
+![GitHub All Releases](https://img.shields.io/github/downloads/PierreGode/workflows/total)
+![Commit Activity](https://img.shields.io/github/commit-activity/m/PierreGode/workflows)
+![Top Language](https://img.shields.io/github/languages/top/PierreGode/workflows)
+![Languages Count](https://img.shields.io/github/languages/count/PierreGode/workflows)
+![Tech Stack](https://img.shields.io/badge/stack-JavaScript%20%7C%20Node.js%20%7C%20Bash-blue)
+![Platform Support](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-blue)
+![Code Review](https://img.shields.io/badge/code%20review-required-orange)
+![Activity](https://img.shields.io/github/commit-activity/y/PierreGode/workflows)
+![GitHub Discussions](https://img.shields.io/github/discussions/PierreGode/workflows)
+![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)
+![Made with Love](https://img.shields.io/badge/Made%20with-Love-ff69b4.svg)
+![Patreon](https://img.shields.io/badge/Patreon-Donate-orange.svg)
+![Visitor Count](https://visitor-badge.glitch.me/badge?page_id=PierreGode.workflows)
+![GitHub Workflow](https://img.shields.io/badge/GitHub-Workflows-brightgreen)
+
+
 
 
 ## Table of Contents
