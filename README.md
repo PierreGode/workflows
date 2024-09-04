@@ -25,8 +25,8 @@ Welcome to the Workflows repository, a dedicated space for experimenting with an
 ![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)
 ![Made with Love](https://img.shields.io/badge/Made%20with-Love-ff69b4.svg)
 ![Patreon](https://img.shields.io/badge/Patreon-Donate-orange.svg)
-![Visitor Count](https://visitor-badge.glitch.me/badge?page_id=PierreGode.workflows)
 ![GitHub Workflow](https://img.shields.io/badge/GitHub-Workflows-brightgreen)
+![Visitor Count](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https://github.com/PierreGode/workflows&title=Visitors)
 
 
 
