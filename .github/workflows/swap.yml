@@ -1,20 +1,27 @@
-name: Swap to Production
+name: Test Pipeline with Approval
 
 on:
   workflow_dispatch:  # Manual trigger
 
 jobs:
-  swap_to_prod:
+  test_pipeline:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Pre-Approval for Slot Swap
-      run: echo "Waiting for approval to swap slots..."
-      continue-on-error: true
-      if: ${{ github.event.inputs.approval == 'true' }}
+    # Step 1: Just a message to indicate the start
+    - name: Start Test Pipeline
+      run: echo "Test pipeline started. Waiting for approval..."
 
-    - name: Swap to Production Slot
-      if: ${{ github.event.inputs.approval == 'true' }}
-      run: |
-        # Your slot swap script here
-        ./swap-to-prod.sh
+    # Step 2: Pre-Approval before proceeding
+    - name: Wait for Approval
+      run: echo "Waiting for approval to proceed..."
+      if: ${{ github.event.inputs.approval == 'true' }}  # This waits for approval
+
+    # Step 3: Completion message
+    - name: Pipeline Complete
+      if: ${{ github.event.inputs.approval == 'true' }}  # Only completes if approved
+      run: echo "Approval received. Test pipeline completed successfully!"
+
+    - name: Pipeline Complete
+      if: ${{ github.event.inputs.approval == 'false' }}  # Only completes if approved
+      run: echo "Approval received. Test pipeline not aprooved!"
