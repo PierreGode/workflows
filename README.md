@@ -1,4 +1,5 @@
 # Workflows Repository by Pierre Gode
+
 Welcome to the Workflows repository, a dedicated space for experimenting with and demonstrating the capabilities of GitHub Actions, workflows, CI/CD pipelines, security practices, branch protection rules, code scanning, badges, and markdown configurations.<p> Managed by Pierre Gode, this repository aims to explore the vast possibilities of GitHub's automation and security features to streamline development workflows and enhance code quality and security.
 
 ![GitHub Workflow Status](https://github.com/PierreGode/workflows/actions/workflows/review.yml/badge.svg)
@@ -25,8 +26,8 @@ Welcome to the Workflows repository, a dedicated space for experimenting with an
 ![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)
 ![Made with Love](https://img.shields.io/badge/Made%20with-Love-ff69b4.svg)
 ![Patreon](https://img.shields.io/badge/Patreon-Donate-orange.svg)
-![Visitor Count](https://visitor-badge.glitch.me/badge?page_id=PierreGode.workflows)
 ![GitHub Workflow](https://img.shields.io/badge/GitHub-Workflows-brightgreen)
+![Visitor Count](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https://github.com/PierreGode/workflows&title=Visitors)
 
 
 
