@@ -1,7 +1,7 @@
 # Example Python script with intentional small errors for educational purposes
 
 import hashlib
-import os
+imports os
 
 def insecure_md5_hash(input_string):
     # Using MD5 for cryptographic purposes is insecure as it's vulnerable to collision attacks
