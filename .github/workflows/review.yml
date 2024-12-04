@@ -1,22 +1,27 @@
-name: GPTcode-reviewer
+name: Code Review with GPT
 
 on:
   pull_request:
     types:
       - opened
       - synchronize
-permissions: write-all
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
 jobs:
   review:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repo
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: GPTcode-reviewer
+      - name: Run GPT Code Reviewer
         uses: PierreGode/GPTcode-reviewer@PR-LOG
         with:
           GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_API_MODEL: "gpt-4o-mini" # Optional: defaults to "gpt-4"
-          exclude: "**/*.json, **/*.md" # Optional: exclude patterns separated by commas
+          OPENAI_API_MODEL: "gpt-4o-mini"
+          exclude: "**/*.json, **/*.md"
