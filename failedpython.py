@@ -13,7 +13,7 @@ def read_file(file_path):
         return file.read()
 
 def get_user_data():
-    # Simulated deprecated function usage
+
     user_data = os.popen('whoami') # os.popen is deprecated in favor of subprocess.run
     return user_data.read().strip()
 
