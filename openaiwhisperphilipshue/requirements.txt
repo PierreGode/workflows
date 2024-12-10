@@ -1,0 +1,12 @@
+openai
+pygame
+PyAudio
+phue
+fuzzywuzzy
+langdetect
+setuptools
+SpeechRecognition
+python-Levenshtein
+sounddevice
+numpy
+langchain
