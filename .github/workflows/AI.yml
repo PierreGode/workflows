@@ -23,7 +23,7 @@ jobs:
       - name: Run AI Analysis
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}  # Use the default GitHub Actions token
+          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
         run: |
           python - <<EOF
           import os
@@ -47,7 +47,7 @@ jobs:
               'Accept': 'application/vnd.github.v3.diff',
           }
           diff_url = event['pull_request']['url'] + "/files"
-          pr_files = requests.get(diff_url, headers={'Authorization': f'token {token}', 'Accept': 'application/vnd.github.v3+json'}).json()
+          pr_files = requests.get(diff_url, headers=headers).json()
 
           diff_text = ""
           for fdata in pr_files:
@@ -86,14 +86,17 @@ jobs:
           issues_response.raise_for_status()
           issues = issues_response.json()['choices'][0]['message']['content'].strip()
 
-          # Split issues into individual comments
-          issues_list = issues.split("\\n- ")  # Assuming issues are returned as a list prefixed with '- '
-          for issue in issues_list:
-              if issue.strip():
-                  issue_comment = {
-                      "body": f"**AI Code Issue Check:**\\n{issue.strip()}"
-                  }
-                  issue_response = requests.post(comment_url, headers={'Authorization': f'token {token}', 'Accept': 'application/vnd.github.v3+json'}, json=issue_comment)
-                  issue_response.raise_for_status()
-          print("Comments posted successfully.")
+          # Only post comments if there are actionable issues
+          if "no issues found" not in issues.lower() and issues.strip():
+              issues_list = issues.split("\\n- ")  # Assuming issues are returned as a list prefixed with '- '
+              for issue in issues_list:
+                  if issue.strip():
+                      issue_comment = {
+                          "body": f"**AI Code Issue Check:**\\n{issue.strip()}"
+                      }
+                      issue_response = requests.post(comment_url, headers={'Authorization': f'token {token}', 'Accept': 'application/vnd.github.v3+json'}, json=issue_comment)
+                      issue_response.raise_for_status()
+              print("Code issues found and comments posted.")
+          else:
+              print("No actionable code issues found.")
           EOF
