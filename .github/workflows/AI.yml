@@ -1,0 +1,82 @@
+name: PR Summary and Code Check
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  summarize_and_check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Requirements
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests PyYAML
+
+      - name: Run AI Summary and Checks
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
+        run: |
+          #!/usr/bin/env python3
+          import os
+          import sys
+          import requests
+          import json
+
+          # Gather GitHub event details
+          event_path = os.environ.get('GITHUB_EVENT_PATH')
+          with open(event_path, 'r') as f:
+              event = json.load(f)
+
+          pr_number = event['pull_request']['number']
+          repo_full_name = event['repository']['full_name']
+          token = os.environ.get('G_TOKEN')
+          openai_key = os.environ.get('OPENAI_API_KEY')
+
+          # Get PR diff
+          headers = {
+              'Accept': 'application/vnd.github.v3.diff',
+              'Authorization': f'token {token}'
+          }
+          diff_url = event['pull_request']['url'] + "/files"
+          pr_files = requests.get(diff_url, headers={'Authorization': f'token {token}', 'Accept': 'application/vnd.github.v3+json'}).json()
+
+          diff_text = ""
+          for fdata in pr_files:
+              filename = fdata['filename']
+              patch = fdata.get('patch', '')
+              diff_text += f"File: {filename}\nPatch:\n{patch}\n\n"
+
+          # Call OpenAI for summary
+          summary_prompt = f"Summarize the following pull request changes in a concise, technical manner:\n\n{diff_text}"
+          headers = {"Content-Type": "application/json", "Authorization": f"Bearer {openai_key}"}
+          data = {
+              "model": "gpt-3.5-turbo",
+              "messages": [{"role": "user", "content": summary_prompt}],
+              "temperature": 0.7
+          }
+          response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=data)
+          summary = response.json()['choices'][0]['message']['content'].strip()
+
+          # Call OpenAI for code issue checks
+          issues_prompt = f"Review the following code changes for potential issues, such as syntax errors, missing brackets, common pitfalls, or bad practices. Provide a brief summary of any found issues:\n\n{diff_text}"
+          data_issues = {
+              "model": "gpt-3.5-turbo",
+              "messages": [{"role": "user", "content": issues_prompt}],
+              "temperature": 0.7
+          }
+          issues_response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=data_issues)
+          issues_summary = issues_response.json()['choices'][0]['message']['content'].strip()
+
+          # Post comment back to PR
+          comment_body = f"**AI Pull Request Summary:**\n{summary}\n\n**AI Code Issue Check:**\n{issues_summary}"
+          comment_url = f"https://api.github.com/repos/{repo_full_name}/issues/{pr_number}/comments"
+          requests.post(comment_url, headers={'Authorization': f'token {token}','Accept': 'application/vnd.github.v3+json'}, json={'body': comment_body})
