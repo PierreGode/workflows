@@ -44,39 +44,23 @@ jobs:
           # Get PR diff
           headers = {
               'Authorization': f'token {token}',
-              'Accept': 'application/vnd.github.v3.diff',
+              'Accept': 'application/vnd.github.v3+json',
           }
           diff_url = event['pull_request']['url'] + "/files"
           pr_files = requests.get(diff_url, headers=headers).json()
 
           diff_text = ""
+          file_patches = []  # Store patches with filenames for review comments
           for fdata in pr_files:
               filename = fdata['filename']
               patch = fdata.get('patch', '')
+              if patch:
+                  file_patches.append({"filename": filename, "patch": patch})
               diff_text += f"File: {filename}\\nPatch:\\n{patch}\\n\\n"
 
-          # Call OpenAI for summary
-          summary_prompt = f"Summarize the following pull request changes in a concise, technical manner:\\n\\n{diff_text}"
-          ai_headers = {"Content-Type": "application/json", "Authorization": f"Bearer {openai_key}"}
-          data = {
-              "model": "gpt-4o-mini",
-              "messages": [{"role": "user", "content": summary_prompt}],
-              "temperature": 0.7
-          }
-          response = requests.post("https://api.openai.com/v1/chat/completions", headers=ai_headers, json=data)
-          response.raise_for_status()
-          summary = response.json()['choices'][0]['message']['content'].strip()
-
-          # Post AI Pull Request Summary
-          comment_url = f"https://api.github.com/repos/{repo_full_name}/issues/{pr_number}/comments"
-          summary_comment = {
-              "body": f"**AI Pull Request Summary:**\\n{summary}"
-          }
-          summary_response = requests.post(comment_url, headers={'Authorization': f'token {token}', 'Accept': 'application/vnd.github.v3+json'}, json=summary_comment)
-          summary_response.raise_for_status()
-
           # Call OpenAI for code issue checks
-          issues_prompt = f"Review the following code changes for potential issues, such as syntax errors, missing brackets, common pitfalls, or bad practices. Provide detailed comments for each issue:\\n\\n{diff_text}"
+          issues_prompt = f"Review the following code changes for potential issues, such as syntax errors, missing brackets, common pitfalls, or bad practices. Provide specific comments tied to lines of code where possible:\\n\\n{diff_text}"
+          ai_headers = {"Content-Type": "application/json", "Authorization": f"Bearer {openai_key}"}
           data_issues = {
               "model": "gpt-4o-mini",
               "messages": [{"role": "user", "content": issues_prompt}],
@@ -86,17 +70,37 @@ jobs:
           issues_response.raise_for_status()
           issues = issues_response.json()['choices'][0]['message']['content'].strip()
 
-          # Only post comments if there are actionable issues
+          # Process issues and post review comments
           if "no issues found" not in issues.lower() and issues.strip():
-              issues_list = issues.split("\\n- ")  # Assuming issues are returned as a list prefixed with '- '
-              for issue in issues_list:
-                  if issue.strip():
-                      issue_comment = {
-                          "body": f"**AI Code Issue Check:**\\n{issue.strip()}"
-                      }
-                      issue_response = requests.post(comment_url, headers={'Authorization': f'token {token}', 'Accept': 'application/vnd.github.v3+json'}, json=issue_comment)
-                      issue_response.raise_for_status()
-              print("Code issues found and comments posted.")
+              # Assuming AI response format includes line numbers and specific feedback
+              review_comments = []
+              for patch_data in file_patches:
+                  filename = patch_data["filename"]
+                  patch = patch_data["patch"]
+                  lines = patch.split("\\n")
+                  for i, line in enumerate(lines, start=1):
+                      # Here, you could parse AI response to determine if the line has an issue
+                      # Example logic: Look for AI's comment references to specific lines
+                      if f"Line {i}" in issues:  # Simplistic check, adapt based on AI response
+                          issue_comment = {
+                              "path": filename,
+                              "line": i,
+                              "side": "RIGHT",  # Indicates it's on the new code side
+                              "body": f"**AI Code Issue:** Found an issue at line {i}: {line.strip()}\\n\\n{issues}"
+                          }
+                          review_comments.append(issue_comment)
+
+              # Submit a review with all comments
+              if review_comments:
+                  review_url = f"https://api.github.com/repos/{repo_full_name}/pulls/{pr_number}/reviews"
+                  review_data = {
+                      "body": "AI Code Issue Review: This PR contains actionable feedback based on the provided changes.",
+                      "event": "COMMENT",
+                      "comments": review_comments
+                  }
+                  review_response = requests.post(review_url, headers={'Authorization': f'token {token}', 'Accept': 'application/vnd.github.v3+json'}, json=review_data)
+                  review_response.raise_for_status()
+                  print("Review comments posted successfully.")
           else:
               print("No actionable code issues found.")
           EOF
