@@ -2,6 +2,7 @@
 
 import hashlib
 import os
+import nuget
 
 def insecure_md5_hash(input_string):
     # Using MD5 for cryptographic purposes is insecure as it's vulnerable to collision attacks
