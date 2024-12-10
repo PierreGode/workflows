@@ -23,7 +23,7 @@ jobs:
       - name: Run AI Analysis
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          G_TOKEN: ${{ secrets.G_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}  # Use the default GitHub Actions token
         run: |
           python - <<EOF
           import os
@@ -35,15 +35,16 @@ jobs:
           with open(event_path, 'r') as f:
               event = json.load(f)
 
+          # Extract PR and repo details
           pr_number = event['pull_request']['number']
           repo_full_name = event['repository']['full_name']
-          token = os.environ.get('G_TOKEN')
+          token = os.environ.get('GITHUB_TOKEN')
           openai_key = os.environ.get('OPENAI_API_KEY')
 
           # Get PR diff
           headers = {
+              'Authorization': f'token {token}',
               'Accept': 'application/vnd.github.v3.diff',
-              'Authorization': f'token {token}'
           }
           diff_url = event['pull_request']['url'] + "/files"
           pr_files = requests.get(diff_url, headers={'Authorization': f'token {token}', 'Accept': 'application/vnd.github.v3+json'}).json()
@@ -58,27 +59,41 @@ jobs:
           summary_prompt = f"Summarize the following pull request changes in a concise, technical manner:\\n\\n{diff_text}"
           ai_headers = {"Content-Type": "application/json", "Authorization": f"Bearer {openai_key}"}
           data = {
-              "model": "gpt-3.5-turbo",
+              "model": "gpt-4o-mini",
               "messages": [{"role": "user", "content": summary_prompt}],
               "temperature": 0.7
           }
           response = requests.post("https://api.openai.com/v1/chat/completions", headers=ai_headers, json=data)
+          response.raise_for_status()
           summary = response.json()['choices'][0]['message']['content'].strip()
 
+          # Post AI Pull Request Summary
+          comment_url = f"https://api.github.com/repos/{repo_full_name}/issues/{pr_number}/comments"
+          summary_comment = {
+              "body": f"**AI Pull Request Summary:**\\n{summary}"
+          }
+          summary_response = requests.post(comment_url, headers={'Authorization': f'token {token}', 'Accept': 'application/vnd.github.v3+json'}, json=summary_comment)
+          summary_response.raise_for_status()
+
           # Call OpenAI for code issue checks
-          issues_prompt = f"Review the following code changes for potential issues, such as syntax errors, missing brackets, common pitfalls, or bad practices. Provide a brief summary of any found issues:\\n\\n{diff_text}"
+          issues_prompt = f"Review the following code changes for potential issues, such as syntax errors, missing brackets, common pitfalls, or bad practices. Provide detailed comments for each issue:\\n\\n{diff_text}"
           data_issues = {
-              "model": "gpt-3.5-turbo",
+              "model": "gpt-4o-mini",
               "messages": [{"role": "user", "content": issues_prompt}],
               "temperature": 0.7
           }
           issues_response = requests.post("https://api.openai.com/v1/chat/completions", headers=ai_headers, json=data_issues)
-          issues_summary = issues_response.json()['choices'][0]['message']['content'].strip()
+          issues_response.raise_for_status()
+          issues = issues_response.json()['choices'][0]['message']['content'].strip()
 
-          # Post comment back to PR
-          comment_body = f"**AI Pull Request Summary:**\\n{summary}\\n\\n**AI Code Issue Check:**\\n{issues_summary}"
-          comment_url = f"https://api.github.com/repos/{repo_full_name}/issues/{pr_number}/comments"
-          comment_response = requests.post(comment_url, headers={'Authorization': f'token {token}', 'Accept': 'application/vnd.github.v3+json'}, json={'body': comment_body})
-          comment_response.raise_for_status()
-          print("Comment posted successfully.")
+          # Split issues into individual comments
+          issues_list = issues.split("\\n- ")  # Assuming issues are returned as a list prefixed with '- '
+          for issue in issues_list:
+              if issue.strip():
+                  issue_comment = {
+                      "body": f"**AI Code Issue Check:**\\n{issue.strip()}"
+                  }
+                  issue_response = requests.post(comment_url, headers={'Authorization': f'token {token}', 'Accept': 'application/vnd.github.v3+json'}, json=issue_comment)
+                  issue_response.raise_for_status()
+          print("Comments posted successfully.")
           EOF
