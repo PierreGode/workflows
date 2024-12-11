@@ -100,19 +100,20 @@ jobs:
           print("PR Summary posted successfully.")
           EOF
 
-  code_review:
-    name: Code Review
-    runs-on: ubuntu-latest
-    steps:
-      # Checkout repository
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+code_review:
+  name: Code Review
+  runs-on: ubuntu-latest
+  steps:
+    # Checkout repository
+    - name: Checkout Repository
+      uses: actions/checkout@v4
 
-      # Run GPT Code Reviewer (handles all code review tasks)
-      - name: Run GPT Code Reviewer
-        uses: PierreGode/GPTcode-reviewer@main
-        with:
-          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_API_MODEL: "gpt-4o-mini"
-          exclude: "**/*.json, **/*.md"
+    # Run GPT Code Reviewer (handles all code review tasks)
+    - name: Run GPT Code Reviewer
+      uses: PierreGode/GPTcode-reviewer@main
+      with:
+        GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        OPENAI_API_MODEL: "gpt-4o-mini"
+        exclude: "**/*.json,**/*.md"
+
