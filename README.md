@@ -4,7 +4,7 @@ Welcome to the Workflows repository, a dedicated space for experimenting with an
 
 ![GitHub Workflow Status](https://github.com/PierreGode/workflows/actions/workflows/review.yml/badge.svg)
 [![CodeQL](https://github.com/PierreGode/workflows/actions/workflows/codeql.yml/badge.svg)](https://github.com/PierreGode/workflows/actions/workflows/codeql.yml) 
-![Build Status](https://img.shields.io/github/actions/workflow/status/PierreGode/workflows/review.yml) 
+![Build Status](https://img.shields.io/github/actions/workflow/status/PierreGode/workflows/AI.yml) 
 ![Last Commit](https://img.shields.io/github/last-commit/PierreGode/workflows) 
 ![License](https://img.shields.io/github/license/PierreGode/workflows)
 ![Stars](https://img.shields.io/github/stars/PierreGode/workflows)
