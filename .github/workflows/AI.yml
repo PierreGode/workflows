@@ -66,19 +66,29 @@ jobs:
           diff_text = ""
           for fdata in pr_files:
               filename = fdata['filename']
-              patch = fdata.get('patch', '')
+              patch = fdata.get('patch', 'No changes')
               diff_text += f"File: {filename}\\nPatch:\\n{patch}\\n\\n"
 
-          # Generate PR summary using OpenAI
+          # Generate PR summary using OpenAI with Chain of Thought Prompting
           summary_prompt = (
               f"Analyze the following pull request diff and provide a concise, technical summary of the changes. "
-              f"Include the following details: "
-              f"- Key files and components modified. "
-              f"- Main purpose of the changes (e.g., bug fixes, feature additions, optimizations). "
-              f"- Specific functionalities introduced, modified, or removed. "
-              f"- Any potential implications or considerations (e.g., performance impacts, breaking changes, dependencies). "
-              f"Ensure the summary is clear, accurate, and professional.\\n\\n{diff_text}"
+              f"To ensure a clear, professional, and complete response, follow these steps:\n"
+              f"1. Identify key files and components modified.\n"
+              f"   Example: 'src/app.js': Added input validation.\n"
+              f"2. Determine the purpose of the changes.\n"
+              f"   Example: Bug fix, feature addition, optimization.\n"
+              f"3. Describe specific functionalities introduced, modified, or removed.\n"
+              f"   Example: Replaced console logs with error handling.\n"
+              f"4. Consider implications or risks.\n"
+              f"   Example: Minor performance impact due to validation checks.\n"
+              f"Structure the response in the following format:\n"
+              f"- Modified Files and Components:\n"
+              f"- Purpose of Changes:\n"
+              f"- Specific Functionalities:\n"
+              f"- Implications or Considerations:\n\n"
+              f"Here is the diff:\n\n{diff_text}"
           )
+
           ai_headers = {"Content-Type": "application/json", "Authorization": f"Bearer {openai_key}"}
           data_summary = {
               "model": "gpt-4o-mini",
