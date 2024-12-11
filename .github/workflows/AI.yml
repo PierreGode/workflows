@@ -14,6 +14,7 @@ permissions:
 
 jobs:
   pr_summary:
+    name: Generate PR Summary
     runs-on: ubuntu-latest
     steps:
       # Checkout repository
@@ -69,7 +70,15 @@ jobs:
               diff_text += f"File: {filename}\\nPatch:\\n{patch}\\n\\n"
 
           # Generate PR summary using OpenAI
-          summary_prompt = f"Summarize the following pull request changes in a concise, technical manner:\\n\\n{diff_text}"
+          summary_prompt = (
+              f"Analyze the following pull request diff and provide a concise, technical summary of the changes. "
+              f"Include the following details: "
+              f"- Key files and components modified. "
+              f"- Main purpose of the changes (e.g., bug fixes, feature additions, optimizations). "
+              f"- Specific functionalities introduced, modified, or removed. "
+              f"- Any potential implications or considerations (e.g., performance impacts, breaking changes, dependencies). "
+              f"Ensure the summary is clear, accurate, and professional.\\n\\n{diff_text}"
+          )
           ai_headers = {"Content-Type": "application/json", "Authorization": f"Bearer {openai_key}"}
           data_summary = {
               "model": "gpt-4o-mini",
@@ -92,6 +101,7 @@ jobs:
           EOF
 
   code_review:
+    name: Code Review
     runs-on: ubuntu-latest
     steps:
       # Checkout repository
