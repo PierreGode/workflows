@@ -17,23 +17,19 @@ jobs:
     name: Generate PR Summary
     runs-on: ubuntu-latest
     steps:
-      # Checkout repository
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Set up Python for PR summaries
       - name: Set Up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
-      # Install Python dependencies
       - name: Install Python Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install requests
 
-      # Run AI Analysis (PR Summary Only)
       - name: Generate PR Summary
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -44,18 +40,15 @@ jobs:
           import requests
           import json
 
-          # Gather GitHub event details
           event_path = os.environ.get('GITHUB_EVENT_PATH')
           with open(event_path, 'r') as f:
               event = json.load(f)
 
-          # Extract PR and repo details
           pr_number = event['pull_request']['number']
           repo_full_name = event['repository']['full_name']
           token = os.environ.get('GITHUB_TOKEN')
           openai_key = os.environ.get('OPENAI_API_KEY')
 
-          # Get PR diff
           headers = {
               'Authorization': f'token {token}',
               'Accept': 'application/vnd.github.v3.diff',
@@ -67,25 +60,19 @@ jobs:
           for fdata in pr_files:
               filename = fdata['filename']
               patch = fdata.get('patch', 'No changes')
-              diff_text += f"File: {filename}\\nPatch:\\n{patch}\\n\\n"
+              diff_text += f"File: {filename}\nPatch:\n"
+              for line in patch.split('\n'):
+                  if line.startswith('+'):
+                      diff_text += f"Added: {line[1:]}\n"
+                  elif line.startswith('-'):
+                      diff_text += f"Removed: {line[1:]}\n"
+                  else:
+                      diff_text += f"{line}\n"
 
-          # Generate PR summary using OpenAI with Chain of Thought Prompting
           summary_prompt = (
-              f"Analyze the following pull request diff and provide a concise, technical summary of the changes. "
-              f"To ensure a clear, professional, and complete response, follow these steps:\n"
-              f"1. Identify key files and components modified.\n"
-              f"   Example: 'src/app.js': Added input validation.\n"
-              f"2. Determine the purpose of the changes.\n"
-              f"   Example: Bug fix, feature addition, optimization.\n"
-              f"3. Describe specific functionalities introduced, modified, or removed.\n"
-              f"   Example: Replaced console logs with error handling.\n"
-              f"4. Consider implications or risks.\n"
-              f"   Example: Minor performance impact due to validation checks.\n"
-              f"Structure the response in the following format:\n"
-              f"- Modified Files and Components:\n"
-              f"- Purpose of Changes:\n"
-              f"- Specific Functionalities:\n"
-              f"- Implications or Considerations:\n\n"
+              f"Analyze the following pull request diff and summarize the changes. "
+              f"Highlight lines added (marked with 'Added:') and lines removed (marked with 'Removed:'). "
+              f"Ensure the summary clearly states which version contains corrections or bug fixes.\n\n"
               f"Here is the diff:\n\n{diff_text}"
           )
 
@@ -99,13 +86,11 @@ jobs:
           summary_response.raise_for_status()
           summary = summary_response.json()['choices'][0]['message']['content'].strip()
 
-          # Post AI Pull Request Summary
           comment_url = f"https://api.github.com/repos/{repo_full_name}/issues/{pr_number}/comments"
           summary_comment = {
-              "body": f"**AI Pull Request Summary:**\\n{summary}"
+              "body": f"**AI Pull Request Summary:**\n{summary}"
           }
-          summary_comment_response = requests.post(comment_url, headers={'Authorization': f'token {token}', 'Accept': 'application/vnd.github.v3+json'}, json=summary_comment)
-          summary_comment_response.raise_for_status()
+          requests.post(comment_url, headers={'Authorization': f'token {token}', 'Accept': 'application/vnd.github.v3+json'}, json=summary_comment)
 
           print("PR Summary posted successfully.")
           EOF
@@ -114,11 +99,9 @@ jobs:
     name: Code Review
     runs-on: ubuntu-latest
     steps:
-      # Checkout repository
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Run GPT Code Reviewer (handles all code review tasks)
       - name: Run GPT Code Reviewer
         uses: PierreGode/GPTcode-reviewer@main
         with:
