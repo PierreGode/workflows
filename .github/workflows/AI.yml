@@ -71,7 +71,11 @@ jobs:
 
           summary_prompt = (
               f"Analyze the following pull request diff and summarize the changes. "
+              f"- Key files and components modified. "
+              f"- Main purpose of the changes (e.g., bug fixes, feature additions, optimizations). "
+              f"- Specific functionalities introduced, modified, or removed. "
               f"Highlight lines added (marked with 'Added:') and lines removed (marked with 'Removed:'). "
+              f"- Any potential implications or considerations (e.g., performance impacts, breaking changes, dependencies). "
               f"Ensure the summary clearly states which version contains corrections or bug fixes.\n\n"
               f"Here is the diff:\n\n{diff_text}"
           )
