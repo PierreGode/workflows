@@ -1,4 +1,4 @@
-name: PR Summary and Code Review
+name: PR summary by AI
 
 on:
   pull_request:
@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   pr_summary:
-    name: Generate PR Summary
+    name: PR Summary
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -30,7 +30,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests
 
-      - name: Generate PR Summary
+      - name: PR Summary
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
@@ -100,13 +100,13 @@ jobs:
           EOF
 
   code_review:
-    name: Code Review
+    name: AI Code Review
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Run GPT Code Reviewer
+      - name: AI Code Review
         uses: PierreGode/GPTcode-reviewer@main
         with:
           GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
