@@ -109,25 +109,25 @@ jobs:
           print("PR Summary posted successfully.")
           EOF
 
-  code_review:
-    name: AI Code Review
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+code_review:
+  name: AI Code Review
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
 
-      - name: Read README.md
-        id: read_readme_review
-        run: |
-          README_CONTENT=$(cat README.md)
-          echo "::set-output name=README::$README_CONTENT"
+    - name: Read README.md
+      id: read_readme_review
+      run: |
+        README_CONTENT=$(cat README.md)
+        echo "::set-output name=README::$README_CONTENT"
 
-      - name: AI Code Review
-        uses: PierreGode/GPTcode-reviewer@dev
-        with:
-          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_API_MODEL: "gpt-4o-mini"
-          exclude: "**/*.json,**/*.md"
-          # Assuming the action allows passing additional context, include README
-          additional_context: ${{ steps.read_readme_review.outputs.README }}
+    - name: AI Code Review
+      uses: PierreGode/GPTcode-reviewer@dev
+      with:
+        GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        OPENAI_API_MODEL: "gpt-4o-mini"
+        exclude: "**/*.json,**/*.md"
+        REVIEW_PROJECT_CONTEXT: ${{ steps.read_readme_review.outputs.README }}
+
