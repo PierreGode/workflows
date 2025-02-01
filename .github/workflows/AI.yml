@@ -24,7 +24,7 @@ jobs:
         id: read_readme
         run: |
           README_CONTENT=$(cat README.md)
-          echo "::set-output name=README::$README_CONTENT"
+          echo "README=${README_CONTENT}" >> $GITHUB_OUTPUT
 
       - name: Set Up Python
         uses: actions/setup-python@v4
@@ -42,7 +42,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
           README_CONTENT: ${{ steps.read_readme.outputs.README }}
         run: |
-          python - <<EOF
+          python - <<'EOF'
           import os
           import requests
           import json
@@ -78,7 +78,7 @@ jobs:
                       diff_text += f"{line}\n"
 
           summary_prompt = (
-              f"Based on the following README, provide a comprehensive analysis of the pull request. \n\n"
+              f"Based on the following README, provide a comprehensive analysis of the pull request.\n\n"
               f"**README Content:**\n{readme_content}\n\n"
               f"**Pull Request Diff:**\n{diff_text}\n\n"
               f"Please include the following in your summary:\n"
@@ -109,25 +109,24 @@ jobs:
           print("PR Summary posted successfully.")
           EOF
 
-code_review:
-  name: AI Code Review
-  runs-on: ubuntu-latest
-  steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+  code_review:
+    name: AI Code Review
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-    - name: Read README.md
-      id: read_readme_review
-      run: |
-        README_CONTENT=$(cat README.md)
-        echo "::set-output name=README::$README_CONTENT"
+      - name: Read README.md
+        id: read_readme_review
+        run: |
+          README_CONTENT=$(cat README.md)
+          echo "README=${README_CONTENT}" >> $GITHUB_OUTPUT
 
-    - name: AI Code Review
-      uses: PierreGode/GPTcode-reviewer@dev
-      with:
-        GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
-        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        OPENAI_API_MODEL: "gpt-4o-mini"
-        exclude: "**/*.json,**/*.md"
-        REVIEW_PROJECT_CONTEXT: ${{ steps.read_readme_review.outputs.README }}
-
+      - name: AI Code Review
+        uses: PierreGode/GPTcode-reviewer@dev
+        with:
+          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_MODEL: "gpt-4o-mini"
+          exclude: "**/*.json,**/*.md"
+          REVIEW_PROJECT_CONTEXT: ${{ steps.read_readme_review.outputs.README }}
