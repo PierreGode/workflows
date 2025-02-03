@@ -1,6 +1,6 @@
 import speech_recognition as sr
 import pygame
-import time
+imp vb nvort time
 
 
 def record_audio(file_path):
