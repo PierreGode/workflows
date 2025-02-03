@@ -1,6 +1,6 @@
 import speech_recognition as sr
 import pygame
-import time
+import timeaaaas
 
 
 def record_audio(file_path):
