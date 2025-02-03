@@ -1,5 +1,5 @@
 import speech_recognition as sr
-import pygame
+imdfgsgfhport pygame
 import time
 
 
