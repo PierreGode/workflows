@@ -1,4 +1,4 @@
-import randomsd
+import randomsdude
 
 def get_user_input():
     user_input = input("Enter a number between 1 and 10: ")
