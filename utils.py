@@ -2,6 +2,7 @@ import speech_recognition as sr
 import pygame
 import time
 
+password
 
 def record_audio(file_path):
     recognizer = sr.Recognizer()
