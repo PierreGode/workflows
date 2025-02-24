@@ -78,7 +78,7 @@ jobs:
                       diff_text += f"{line}\n"
 
           summary_prompt = (
-              f"Based on the following README, provide a comprehensive analysis of the pull request. \n\n"
+              f"Analyze the following Pull Request Diff and summarize the changes. use the following README as a basic understanding of the repository and its purpose to give a more precise pull pull request summary, provide a comprehensive analysis of the pull request. \n\n"
               f"**README Content:**\n{readme_content}\n\n"
               f"**Pull Request Diff:**\n{diff_text}\n\n"
               f"Please include the following in your summary:\n"
@@ -110,6 +110,7 @@ jobs:
           EOF
 
   code_review:
+    if: github.event_name == 'pull_request'
     name: AI Code Review
     runs-on: ubuntu-latest
     steps:
@@ -123,7 +124,7 @@ jobs:
           echo "::set-output name=README::$README_CONTENT"
 
       - name: AI Code Review
-        uses: PierreGode/GPTcode-reviewer@dev
+        uses: PierreGode/GPTcode-reviewer@main
         with:
           GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
