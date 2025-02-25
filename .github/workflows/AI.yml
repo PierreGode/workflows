@@ -96,6 +96,7 @@ jobs:
               diff_text = "No significant changes detected."
 
           # Construct the summary prompt
+          # Note the extra instructions to provide a disruption level at the end.
           summary_prompt = (
               f"Analyze the following Pull Request Diff and summarize the changes:\n\n"
               f"**README Content:**\n{readme_content}\n\n"
@@ -105,11 +106,18 @@ jobs:
               f"- Key modified files\n"
               f"- Purpose (bug fixes, new features, optimizations)\n"
               f"- Functional changes with relevant code examples\n"
-              f"- Potential impacts (breaking changes, performance concerns)"
+              f"- Potential impacts (breaking changes, performance concerns)\n\n"
+              f"Finally, provide a single line labeled 'Disruption Level:' at the end, with one of the following:\n"
+              f"- ✅ for minimal/non-application-affecting changes (e.g. comments, renaming variables)\n"
+              f"- 🟠 for minor changes that might affect some application behavior\n"
+              f"- 🔴 for major/possible breaking changes.\n"
           )
 
           # Call OpenAI API
-          ai_headers = {"Content-Type": "application/json", "Authorization": f"Bearer {openai_key}"}
+          ai_headers = {
+              "Content-Type": "application/json",
+              "Authorization": f"Bearer {openai_key}"
+          }
           openai_response = requests.post(
               "https://api.openai.com/v1/chat/completions",
               headers=ai_headers,
@@ -124,7 +132,11 @@ jobs:
 
           # Post the summary as a PR comment
           comment_url = f"https://api.github.com/repos/{repo_full_name}/issues/{pr_number}/comments"
-          comment_response = requests.post(comment_url, headers=headers, json={"body": f"**AI Pull Request Summary:**\n{summary}"})
+          comment_response = requests.post(
+              comment_url,
+              headers=headers,
+              json={"body": f"**AI Pull Request Summary:**\n{summary}"}
+          )
           comment_response.raise_for_status()
 
           print("PR Summary posted successfully.")
